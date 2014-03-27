@@ -1,0 +1,43 @@
+{
+  "listen": 55552, 
+  "logs": [
+    {
+      "format": "pretty", 
+      "type": "stdout", 
+      "level": "trace"
+    }
+  ], 
+  "users": {
+    "test": {
+      "password": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+    }
+  }, 
+  "packages": {
+    "testfwd": {
+      "allow_access": "all", 
+      "allow_publish": "all"
+    }, 
+    "testloop": {
+      "allow_access": "all", 
+      "proxy_access": "server1", 
+      "allow_publish": "all", 
+      "proxy_publish": "server1"
+    },
+    "testpkg*": {
+      "allow_access": "test anonymous", 
+      "proxy_access": "server1", 
+      "allow_publish": "test anonymous"
+    }, 
+    "*": {
+      "allow_access": "test anonymous", 
+      "allow_publish": "test anonymous"
+    }
+  }, 
+  "storage": "./test-storage2", 
+  "uplinks": {
+    "server1": {
+      "url": "http://localhost:55551/", 
+      "maxage": 0
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "sinopia",
+  "version": "0.7.0",
+  "description": "Private npm repository server",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./test/functional -A && mocha ./test/unit",
+    "start": "sinopia"
+  },
+  "author": {
+    "name": "Alex Kocharin",
+    "email": "alex@kocharin.ru"
+  },
+  "license": "WTFPL",
+  "bin": {
+    "sinopia": "bin/sinopia"
+  },
+  "dependencies": {
+    "express": "~4.x",
+    "fs-ext": ">= 0.3.2",
+    "semver": "^2.2.1",
+    "bunyan": "^0.22.1",
+    "minimatch": "^0.2.14",
+    "mkdirp": "^0.3.5",
+    "request": "^2.34.0",
+    "cookies": "^0.4.0",
+    "commander": "^2.1.0",
+    "cli-prompt": "^0.3.2",
+    "body-parser": "^1.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^1.18.2",
+    "rimraf": ">= 2.2.5"
+  }
+}
