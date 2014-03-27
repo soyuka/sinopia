@@ -10,16 +10,16 @@ module.exports = function() {
 	var server = process.server
 	var server2 = process.server2
 
-	it('downloading non-existent tarball #1 / srv2', function(cb) {
-		server2.get_tarball('testpkg-gh29', 'blahblah', function(res, body) {
-			assert.equal(res.statusCode, 404)
-			assert.equal(body.error, 'not_found')
-			assert(~body.reason.indexOf('no such package'))
-			cb()
-		})
-	})
-
 	describe('pkg-gh29', function() {
+		it('downloading non-existent tarball #1 / srv2', function(cb) {
+			server2.get_tarball('testpkg-gh29', 'blahblah', function(res, body) {
+				assert.equal(res.statusCode, 404)
+				assert.equal(body.error, 'not_found')
+				assert(~body.reason.indexOf('no such package'))
+				cb()
+			})
+		})
+
 		before(function(cb) {
 			server.put_package('testpkg-gh29', require('./lib/package')('testpkg-gh29'), function(res, body) {
 				assert.equal(res.statusCode, 201)

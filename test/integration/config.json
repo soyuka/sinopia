@@ -1,0 +1,32 @@
+{
+  "uplinks": {
+    "npmjs": {
+      "url": "https://registry.npmjs.org/"
+    }
+  }, 
+  "users": {
+    "admin": {
+      "password": "c34dc1f92f9a74ca2ea256ad9b3aa8ef670d01ed"
+    }
+  }, 
+  "packages": {
+    "jju": {
+      "allow_access": "all", 
+      "proxy_access": "npmjs", 
+      "allow_publish": "all"
+    }, 
+   "*": {
+      "allow_access": "all", 
+      "allow_publish": "all"
+    }
+  }, 
+  "logs": [
+    {
+      "format": "pretty", 
+      "type": "stdout", 
+      "level": "trace"
+    }
+  ], 
+  "storage": "./storage",
+  "listen": 55501
+}

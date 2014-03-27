@@ -9,13 +9,14 @@ module.exports = function() {
 	var server = process.server
 	var express = process.express
 
-	it('tags - testing for 404', function(cb) {
-		server.get_package('testexp_tags', function(res, body) {
-			// shouldn't exist yet
-			assert.equal(res.statusCode, 404)
-			assert.equal(body.error, 'not_found')
-			assert(~body.reason.indexOf('no such package'))
-			cb()
+	describe('tags - testing for 404', function() {
+		it("shouldn't exist yet", function(cb) {
+			server.get_package('testexp_tags', function(res, body) {
+				assert.equal(res.statusCode, 404)
+				assert.equal(body.error, 'not_found')
+				assert(~body.reason.indexOf('no such package'))
+				cb()
+			})
 		})
 	})
 

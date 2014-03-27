@@ -1,9 +1,2 @@
-node_modules
-package.json
-npm-debug.log
-sinopia-*.tgz
-
-###
-bin/storage*
-bin/*.yaml
-test-storage*
+node_modules/
+config/config.json

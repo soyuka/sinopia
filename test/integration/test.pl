@@ -20,7 +20,7 @@ sub quit {
 
 # run sinopia in a child process
 if (($pid = fork()) == 0) {
-	exec "../../../bin/sinopia ../config.yaml";
+	exec "../../../bin/sinopia -c ./config.json";
 	die "exec failed";
 }
 
@@ -31,8 +31,16 @@ if (`cat .npmrc` !~ /sinopia_test_config/) {
 	quit "npm is using wrong config";
 }
 
-system('npm set registry http://localhost:55501') and quit('fail');
-system(q{/bin/echo -e 'test\ntest\ns@s.s\n' | npm adduser}) and quit('fail');
+my $npmrc = <<'END';
+_auth = YWRtaW46Y3JhenlwYXNzd29yZA==
+registry = http://localhost:55501/
+email = test@t.com
+END
+
+# system('npm set registry http://localhost:55501') and quit('fail');
+# system(q{echo -e "test\ntest\ncrazypassword\ntestuser@example.com" | npm adduser}) and quit('fail');
+
+system('echo "'.$npmrc.'" > .npmrc') and quit('fail');
 
 system('npm install jju') and quit('fail');
 (`node -e 'console.log(require("jju").parse("{qwerty:123}").qwerty+456)'` =~ /579/) or quit('fail');

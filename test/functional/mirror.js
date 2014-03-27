@@ -18,6 +18,7 @@ module.exports = function() {
 		})
 	})
 
+	//		? :p
 	;['fwd', /*'loop'*/].forEach(function(pkg) {
 		var prefix = pkg + ': '
 		pkg = 'test' + pkg

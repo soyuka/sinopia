@@ -1,8 +1,6 @@
 var assert = require('assert')
-  , semver_sort = require('../../lib/utils').semver_sort
-  , merge = require('../../lib/storage')._merge_versions
-
-require('../../lib/logger').setup([])
+  , semver_sort = require('../../lib/helpers/utils').semver_sort
+  , merge = require('../../lib/storage/storage')._merge_versions
 
 describe('Merge', function() {
 	it('simple', function() {

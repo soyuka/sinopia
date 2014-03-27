@@ -7,17 +7,18 @@ function readfile(x) {
 module.exports = function() {
 	var server = process.server
 
-	it('add tag - 404', function(cb) {
-		server.add_tag('testpkg-tag', 'tagtagtag', '0.0.1', function(res, body) {
-			assert.equal(res.statusCode, 404)
-			assert.equal(body.error, 'not_found')
-			assert(~body.reason.indexOf('no such package'))
-			cb()
-		})
-	})
-
 	describe('addtag', function() {
-		before(function(cb) {
+
+		it('add tag - 404', function(cb) {
+			server.add_tag('testpkg-tag', 'tagtagtag', '0.0.1', function(res, body) {
+				assert.equal(res.statusCode, 404)
+				assert.equal(body.error, 'not_found')
+				assert(~body.reason.indexOf('no such package'))
+				cb()
+			})
+		})
+
+		it('add testpkg-tag', function(cb){
 			server.put_package('testpkg-tag', eval(
 				'(' + readfile('fixtures/publish.json5')
 					.toString('utf8')
@@ -29,8 +30,6 @@ module.exports = function() {
 				cb()
 			})
 		})
-
-		it('add testpkg-tag', function(){})
 
 		it('add tag - bad ver', function(cb) {
 			server.add_tag('testpkg-tag', 'tagtagtag', '0.0.1-x', function(res, body) {

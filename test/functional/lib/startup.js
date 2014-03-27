@@ -9,13 +9,19 @@ var forks = process.forks = []
 process.server = new Server('http://localhost:55551/')
 process.server2 = new Server('http://localhost:55552/')
 process.express = express()
+
 process.express.listen(55550)
 
+var debug = process.argv.indexOf('-d') !== -1 || process.argv.indexOf('--debug') !== -1
+
 module.exports.start = function start(dir, conf, cb) {
+
+	// global.console.log(require('path').resolve(__dirname, '../../../', 'bin/sinopia'))
+
 	rimraf(__dirname + '/../' + dir, function() {
 		var f = fork(__dirname + '/../../../bin/sinopia'
 		          , ['-c', __dirname + '/../' + conf]
-		          , {silent: true}
+		          , {silent: debug ? false : true}
 		)
 		forks.push(f)
 		f.on('message', function(msg) {

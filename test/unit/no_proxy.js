@@ -1,7 +1,5 @@
 var assert = require('assert')
-  , Storage = require('../../lib/up-storage')
-
-require('../../lib/logger').setup([])
+  , Storage = require('../../lib/storage/up-storage')
 
 function setup(host, config, mainconfig) {
 	config.url = host

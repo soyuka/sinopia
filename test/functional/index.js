@@ -16,10 +16,10 @@ describe('Func', function() {
 	before(function(cb) {
 		async.parallel([
 			function(cb) {
-				require('./lib/startup').start('./test-storage', './config-1.yaml', cb)
+				require('./lib/startup').start('./test-storage', './config-1.json', cb)
 			},
 			function(cb) {
-				require('./lib/startup').start('./test-storage2', './config-2.yaml', cb)
+				require('./lib/startup').start('./test-storage2', './config-2.json', cb)
 			},
 		], cb)
 	})
@@ -34,16 +34,20 @@ describe('Func', function() {
 		}, cb)
 	})
 
-	it('authenticate', function(){/* test for before() */})
+	it('should authenticate', function(cb){
+		/* test for before() */
+		cb() //mocha -A
+	})
+
 
 	require('./basic')()
-	require('./gh29')()
-	require('./tags')()
-	require('./incomplete')()
-	require('./mirror')()
-	require('./race')()
-	require('./racycrash')()
-	require('./security')()
-	require('./addtag')()
+	// require('./gh29')()
+	// require('./tags')()
+	// require('./incomplete')()
+	// require('./mirror')()
+	// require('./race')()
+	// require('./racycrash')()
+	// require('./security')()
+	// require('./addtag')()
 })
 

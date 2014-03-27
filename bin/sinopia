@@ -1,4 +1,175 @@
 #!/usr/bin/env node
 
-require('../lib/cli')
+/*eslint no-sync:0*/
+
+if (process.getuid && process.getuid() === 0) {
+	global.console.error("Sinopia doesn't need superuser privileges. Don't run it under root.")
+}
+
+try {
+	// for debugging memory leaks
+	// totally optional
+	require('heapdump')
+} catch(err){}
+
+var logger = require('../lib/core/logger')
+
+var fs = require('fs')
+  , path = require('path')
+  , commander = require('commander')
+  , server = require('../lib/server')
+  , crypto = require('crypto')
+  , pkg = require('../package.json')
+  , express = require('express')
+  , middlewares = require('../lib/core/middlewares')
+  , Config = require('../lib/core/config')
+
+commander
+	.option('-l, --listen <[host:]port>', 'host:port number to listen on (default: localhost:4873)')
+	.option('-c, --config <config.json>', 'use this configuration file (default: ./config.yaml)')
+	.version(pkg.version)
+	.parse(process.argv)
+
+
+if (commander.args.length == 1 && !commander.config) {
+	// handling "sinopia [config]" case if "-c" is missing in commandline
+	commander.config = commander.args.pop()
+}
+
+if (commander.args.length !== 0) {
+	commander.help()
+}
+
+var config, config_path = commander.config, have_question
+
+if (config_path) {
+
+	config_path = path.resolve(process.env.PWD, config_path)
+
+	if(!fs.existsSync(config_path)) {
+		logger.fatal('cannot open config file ' + config_path)
+		process.exit(1)
+	}
+
+	config = require(config_path)
+	afterConfigLoad()
+
+} else {
+
+	config_path = path.resolve(__dirname, '../config/config.json')
+
+	if(!fs.existsSync(config_path)) {
+		
+		var timeout = setTimeout(function() {
+			global.console.log('I got tired waiting for an answer. Exitting...')
+			process.exit(1)
+		}, 20000)
+
+		require('cli-prompt')('Config file doesn\'t exist, create a new one? (Y/n) ', function (val) {
+			
+			clearTimeout(timeout)
+
+			if(!val || val.toLowerCase() === 'y') {
+				config_path = path.resolve(__dirname, '../config/config.default.json')
+
+				var pass = crypto.randomBytes(8).toString('base64').replace(/[=+\/]/g, '')
+					, pass_digest = crypto.createHash('sha1').update(pass).digest('hex')
+
+				config = require(config_path)
+				config.users.admin.password = pass_digest
+
+				config_path = path.resolve(__dirname, '../config/config.json')
+
+				fs.writeFileSync(config_path, JSON.stringify(config))
+
+				write_config_banner('admin', pass, config_path)
+
+				config = require(config_path)
+				afterConfigLoad()
+
+			} else {
+				console.log('So, you just accidentally run me in a wrong folder. Exitting...')
+				process.exit(1)
+			}
+		})
+	} else {
+		config = require(config_path)
+		afterConfigLoad()
+	}
+}
+
+function get_hostport() {
+	// command line || config file || default
+	var hostport = commander.listen || String(config.listen || '') || '4873'
+
+	hostport = hostport.split(':')
+	if (hostport.length < 2) {
+		hostport = [undefined, hostport[0]]
+	}
+	if (hostport[0] == null) {
+		hostport[0] = 'localhost'
+	}
+	return hostport
+}
+
+function afterConfigLoad() {
+	if (!config.user_agent) config.user_agent = 'Sinopia/'+pkg.version
+	if (!config.self_path) config.self_path = path.resolve(__dirname, '..')
+
+	config = new Config(config)
+
+	var hostport = get_hostport()
+
+	express()
+		.use(require('body-parser').json({strict: false, limit: config.max_body_size || '10mb'}))
+		//core middlewares
+		.use(middlewares.error_reporter)
+		.use(middlewares.log_and_etagify)
+		.use(middlewares.anti_loop(config))
+
+		.use(function(req, res, next) {
+			res.set('X-Powered-By', config.user_agent)
+			next()
+		})
+		.use(middlewares.basic_auth(function(user, pass) {
+			return config.authenticate(user, pass)
+		}))
+		.use('/', server(config))
+		.use(middlewares.error)
+		.listen(hostport[1], hostport[0])
+		.on('error', function(err) {
+			logger.fatal({err: err}, 'cannot create server: @{err.message}')
+			process.exit(2)
+		})
+
+	logger.warn({addr: 'http://'+hostport[0]+':'+hostport[1]+'/', version: 'Sinopia/'+pkg.version}, 'Server is listening on @{addr}')
+
+	// undocumented stuff for tests
+	if (typeof(process.send) === 'function') {
+		process.send({sinopia_started: hostport})
+	}
+}
+
+function write_config_banner(user, pass, config_path) {
+	var hostport = get_hostport()
+	var log = global.console.log
+
+	log('===========================================================')
+	log(' Creating a new configuration file: "%s"', config_path)
+	log(' ')
+	log(' If you want to setup npm to work with this registry,')
+	log(' run following commands:')
+	log(' ')
+	log(' $ npm set registry http://%s:%s/', hostport[0], hostport[1])
+	log(' $ npm set always-auth true')
+	log(' $ npm adduser')
+	log('   Username: %s', user)
+	log('   Password: %s', pass)
+	log('===========================================================')
+}
+
+process.on('uncaughtException', function(err) {
+	logger.fatal({err: err}, 'uncaught exception, please report this\n@{err.stack}')
+	process.exit(255)
+})
 

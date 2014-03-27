@@ -1,5 +1,5 @@
 var assert = require('assert')
-  , parse_interval = require('../../lib/config').parse_interval
+  , parse_interval = require('../../lib/helpers/utils').parse_interval
 
 describe('Parse interval', function() {
 	function add_test(str, res) {

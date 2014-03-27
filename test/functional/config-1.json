@@ -1,0 +1,59 @@
+{
+  "listen": 55551, 
+  "logs": [
+    {
+      "format": "pretty", 
+      "type": "stdout", 
+      "level": "trace"
+    }
+  ], 
+  "users": {
+    "test": {
+      "password": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+    }
+  }, 
+  "packages": {
+    "testfwd*": {
+      "allow_access": "all", 
+      "proxy_access": "server2", 
+      "allow_publish": "all", 
+      "proxy_publish": "server2"
+    }, 
+    "testloop": {
+      "allow_access": "all", 
+      "proxy_access": "server2", 
+      "allow_publish": "all", 
+      "proxy_publish": "server2"
+    }, 
+    "testexp*": {
+      "allow_access": "all", 
+      "proxy_access": "express", 
+      "allow_publish": "all"
+    }, 
+    "baduplink": {
+      "allow_access": "all", 
+      "proxy_access": "baduplink", 
+      "allow_publish": "all"
+    }, 
+    "*": {
+      "allow_access": "test undefined", 
+      "allow_publish": "test undefined"
+    },
+    "testpkg": {
+      "allow_access": "none"
+    }
+  }, 
+  "storage": "./test-storage", 
+  "uplinks": {
+    "express": {
+      "url": "http://localhost:55550/", 
+      "timeout": "100ms"
+    }, 
+    "server2": {
+      "url": "http://localhost:55552/"
+    }, 
+    "baduplink": {
+      "url": "http://localhost:55666/"
+    }
+  }
+}
