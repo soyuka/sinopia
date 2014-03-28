@@ -1,3 +1,9 @@
+[![Build Status](https://travis-ci.org/soyuka/sinopia.svg?branch=master)](https://travis-ci.org/soyuka/sinopia)
+
+A fork allowing to use Sinopia as a sub router, all the credits to the author : https://github.com/rlidwka/sinopia.
+
+-------------------
+
 Sinopia is a private/caching npm repository server.
 
 It allows you to have a local npm registry with zero configuration. You don't have to install and replicate an entire CouchDB database. Sinopia keeps its own small database and, if a package doesn't exist there, it asks npmjs.org for it keeping only those packages you use.
